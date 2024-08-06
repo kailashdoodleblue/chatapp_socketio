@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node.js Chat App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: #ffffff;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #1f1f1f;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        .header {
+            padding: 20px;
+            text-align: center;
+            background-color: #007bff;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        .header h2 {
+            margin: 0;
+            color: #ffffff;
+        }
+        .chat-box {
+            height: 400px;
+            overflow-y: scroll;
+            padding: 20px;
+            border-bottom: 1px solid #333;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #333;
+        }
+        .message span {
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .message p {
+            margin: 5px 0;
+            color: #cccccc;
+        }
+        .input-box {
+            padding: 10px;
+            background-color: #2a2a2a;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+        .input-box input[type="text"] {
+            width: calc(100% - 90px);
+            padding: 10px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #3d3d3d;
+            color: #ffffff;
+        }
+        .input-box button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .input-box button:hover {
+            background-color: #0056b3;
+        }
+        form{
+            display:flex
+            
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2 id="playerName"></h2>
+        </div>
+        <div class="chat-box" id="chatBox">
+            <!-- Chat messages will be displayed here -->
+        </div>
+        <div class="input-box">
+            <form id="sendButton">
+                <input type="text" id="messageInput" placeholder="Type your message...">
+                <button type="submit" id="sendButton">Send</button>
+            </form>
+        </div>
+        <p style="text-align: center; color: #555;">@By Kailash</p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>
+    <script>
+        function startGame(playerName) {
+            console.log("Game started for player: " + playerName);
+            alert("Welcome, " + playerName + "! Let's start the game.");
+        }
+
+        // Function to prompt for the player's name
+        let username;
+        function getPlayerName() {
+            username = prompt("Please enter your name to start the message:");
+
+            // Check if a name was entered
+            if (username) {
+                // startGame(username);
+                document.getElementById('playerName').textContent = username;
+            } else {
+                // If no name was entered, display an alert
+                alert("You didn't enter a name. Please try again.");
+                getPlayerName(); // Re-prompt for the name
+            }
+        }
+
+        // Automatically prompt for the player's name when the page loads
+        document.addEventListener("DOMContentLoaded", function() {
+            getPlayerName();
+        });
+
+        const socket = io();
+
+        const chatBox = document.getElementById('chatBox');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+
+        // Function to add a message to the chat box
+        function addMessage(message) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            messageElement.innerHTML = `<span>${message.sender}</span>: <p>${message.text}</p>`;
+            chatBox.appendChild(messageElement);
+            // Scroll to bottom of chat box
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Event listener for send button click
+        sendButton.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const message = messageInput.value.trim();
+            if (message !== '') {
+                // Emit message to server
+                socket.emit('message', { sender: username, text: message });
+                // Clear input field
+                messageInput.value = '';
+            }
+        });
+
+        // Event listener for receiving messages from server
+        socket.on('message', (message) => {
+            addMessage(message);
+        });
+    </script>
+</body>
+</html>
