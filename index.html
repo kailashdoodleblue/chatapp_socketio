@@ -88,7 +88,6 @@
             <h2 id="playerName"></h2>
         </div>
         <div class="chat-box" id="chatBox">
-            <!-- Chat messages will be displayed here -->
         </div>
         <div class="input-box">
             <form id="sendButton">
@@ -105,24 +104,18 @@
             console.log("Game started for player: " + playerName);
             alert("Welcome, " + playerName + "! Let's start the game.");
         }
-
-        // Function to prompt for the player's name
         let username;
         function getPlayerName() {
             username = prompt("Please enter your name to start the message:");
 
-            // Check if a name was entered
             if (username) {
-                // startGame(username);
                 document.getElementById('playerName').textContent = username;
             } else {
-                // If no name was entered, display an alert
                 alert("You didn't enter a name. Please try again.");
-                getPlayerName(); // Re-prompt for the name
+                getPlayerName(); 
             }
         }
 
-        // Automatically prompt for the player's name when the page loads
         document.addEventListener("DOMContentLoaded", function() {
             getPlayerName();
         });
@@ -133,29 +126,24 @@
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
 
-        // Function to add a message to the chat box
         function addMessage(message) {
             const messageElement = document.createElement('div');
             messageElement.classList.add('message');
             messageElement.innerHTML = `<span>${message.sender}</span>: <p>${message.text}</p>`;
             chatBox.appendChild(messageElement);
-            // Scroll to bottom of chat box
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // Event listener for send button click
         sendButton.addEventListener('submit', (e) => {
             e.preventDefault();
             const message = messageInput.value.trim();
             if (message !== '') {
-                // Emit message to server
+                
                 socket.emit('message', { sender: username, text: message });
-                // Clear input field
                 messageInput.value = '';
             }
         });
 
-        // Event listener for receiving messages from server
         socket.on('message', (message) => {
             addMessage(message);
         });
