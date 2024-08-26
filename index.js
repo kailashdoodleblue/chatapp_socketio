@@ -8,7 +8,14 @@ const server = http.createServer(app);
 
 app.use(cors());
 
-const io = socketio(server)
+// const io = socketio(server)
+const io = require('socket.io')(server, {
+    cors: {
+      origin: '*', // or specify your client URL
+      methods: ['GET', 'POST'],
+      credentials: true
+    }
+  });
 io.listen(server)
 app.get('/', (req,res) => {
     res.sendFile(__dirname+ '/index.html');
