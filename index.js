@@ -9,6 +9,7 @@ const server = http.createServer(app);
 app.use(cors());
 
 const io = socketio(server)
+io.listen(server)
 app.get('/', (req,res) => {
     res.sendFile(__dirname+ '/index.html');
 })
